@@ -1,0 +1,205 @@
+<?php
+
+/**
+ * @file
+ *
+ */
+
+function incubator_music_enable() {
+  $t = get_t();
+  
+  $type = array(
+    'type' => 'song',
+    'name' => $t('Song', array(), array('#context' => 'Node type name')),
+    'description' => $t('Post a <em>song</em> for a single recorded work of music.'),
+  );
+  
+  $pathauto_prefix = $t('songs/', array(), array('#context' => 'Web search friendly URL - no special characters'));
+  
+  if (_incubator_create_nodetype($type, $pathauto_prefix, 2, FALSE, array('status', 'revision', 'moderation'))) {
+    _incubator_attach_field('field_main_image', 'song');
+    _incubator_attach_field('field_tags', 'song');
+    _incubator_attach_field('field_attribution', 'song');
+    _incubator_attach_field('field_audio', 'song');
+    _incubator_attach_field('field_attachments', 'song');
+    $body_field = field_info_instance('node', 'body', 'song');
+    $body_field['display']['teaser'] = array(
+      'type' => 'hidden',
+      'label' => 'hidden',
+      'settings' => array(),
+      'weight' => 0,
+    );
+    field_update_instance($body_field);
+  }
+
+  _incubator_set_location('song', array('multiple' => array('min' => 0, 'max' => 0, 'add' => 0)));
+
+  $type = array(
+    'type' => 'album',
+    'name' => $t('Album', array(), array('#context' => 'Node type name')),
+    'description' => $t('Post an <em>album</em> for a collection of music.'),
+  );
+  
+  $pathauto_prefix = $t('albums/', array(), array('#context' => 'Web search friendly URL - no special characters'));
+  
+  if (_incubator_create_nodetype($type, $pathauto_prefix, 2, FALSE, array('status', 'revision', 'moderation'))) {
+    _incubator_attach_field('field_main_image', 'album');
+    _incubator_attach_field('field_tags', 'album');
+    _incubator_attach_field('field_songs', 'album');
+    _incubator_attach_field('field_attachments', 'album');
+  }
+
+  _incubator_set_location('album', array('multiple' => array('min' => 0, 'max' => 0, 'add' => 0)));
+  
+  _incubator_create_role('songwriter', array('song', 'album'));
+
+}
+
+function incubator_music_disable() {
+  module_load_install('incubator');
+  _incubator_delete_nodetype('song');
+  _incubator_delete_nodetype('album');
+  $role = user_role_load_by_name('songwriter');
+  user_role_change_permissions($role->rid, array());
+}
+
+function incubator_animals_uninstall() {
+  user_role_delete('songwriter');
+}
+
+function _incubator_fields_field_songs($op = 'field') {
+  $t = get_t();
+
+  // FIELD DEFINITION
+  if ($op == 'field') {
+    $field = array(
+      'translatable' => '0',
+      'settings' => array(
+        'referenceable_types' => array(
+          'song' => 'song',
+        ),
+        'view' => array(),
+      ),
+      'storage' => array(
+        'type' => 'field_sql_storage',
+        'settings' => array(),
+      ),
+      'field_name' => 'field_songs',
+      'type' => 'node_reference',
+      'locked' => '0',
+      'cardinality' => '-1',
+    );
+    return $field;
+  }
+
+  // FIELD INSTANCE DEFINITION
+  elseif ($op == 'instance') {
+    $instance = array(
+      'label' => 'Songs',
+      'widget' => array(
+        'weight' => '5',
+        'type' => 'node_reference_autocomplete',
+        'module' => 'node_reference',
+        'active' => 1,
+        'settings' => array(
+          'autocomplete_match' => 'contains',
+          'size' => '90',
+          'autocomplete_path' => 'node_reference/autocomplete',
+        ),
+      ),
+      'settings' => array(
+        'user_register_form' => FALSE,
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'above',
+          'type' => 'node_reference_default',
+          'settings' => array(),
+          'module' => 'node_reference',
+          'weight' => 1,
+        ),
+        'teaser' => array(
+          'type' => 'hidden',
+          'label' => 'hidden',
+          'settings' => array(),
+          'weight' => 0,
+        ),
+      ),
+      'required' => 0,
+      'description' => '',
+      'entityconnect_unload_add' => '0',
+      'entityconnect_unload_edit' => '0',
+      'default_value' => NULL,
+      'field_name' => 'field_songs',
+    );
+    return $instance;
+  }
+
+  return FALSE;
+}
+
+function _incubator_fields_field_attribution($op = 'field') {
+  $t = get_t();
+
+  // FIELD DEFINITION
+  if ($op == 'field') {
+    $field = array(
+      'translatable' => '0',
+      'settings' => array(),
+      'storage' => array(
+        'type' => 'field_sql_storage',
+        'settings' => array(),
+      ),
+      'field_name' => 'field_attribution',
+      'type' => 'text_long',
+      'locked' => '0',
+      'cardinality' => '1',
+    );
+    return $field;
+  }
+
+  // FIELD INSTANCE DEFINITION
+  elseif ($op == 'instance') {
+    $instance = array(
+      'label' => 'Attribution and Notes',
+      'widget' => array(
+        'weight' => '1',
+        'type' => 'text_textarea',
+        'module' => 'text',
+        'active' => 1,
+        'settings' => array(
+          'rows' => '2',
+        ),
+      ),
+      'settings' => array(
+        'text_processing' => '1',
+        'user_register_form' => FALSE,
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'text_default',
+          'weight' => '0',
+          'settings' => array(),
+          'module' => 'text',
+        ),
+        'teaser' => array(
+          'label' => 'hidden',
+          'type' => 'media_trimmed',
+          'weight' => '0',
+          'settings' => array(
+            'trim_length' => 600,
+          ),
+          'module' => 'incubator',
+        ),
+      ),
+      'required' => 0,
+      'description' => '',
+      'default_value' => NULL,
+      'field_name' => 'field_attribution',
+    );
+    return $instance;
+  }
+
+  return FALSE;
+}

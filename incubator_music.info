@@ -1,0 +1,10 @@
+name = Music
+description = Create songs and organize them into albums
+package = *Incubator
+core = 7.x
+
+dependencies[] = lyric_sheet_chords
+dependencies[] = better_formats
+dependencies[] = mediaelement
+dependencies[] = node_reference
+dependencies[] = entityconnect
