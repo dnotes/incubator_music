@@ -230,7 +230,7 @@ function _incubator_fields_field_attribution($op = 'field') {
     $instance = array(
       'label' => 'Attribution and Notes',
       'widget' => array(
-        'weight' => '1',
+        'weight' => '-2',
         'type' => 'text_textarea',
         'module' => 'text',
         'active' => 1,
@@ -240,6 +240,13 @@ function _incubator_fields_field_attribution($op = 'field') {
       ),
       'settings' => array(
         'text_processing' => '1',
+        'better_formats' => array(
+          'allowed_formats_toggle' => 1,
+          'allowed_formats' => array(
+            'plain_text' => 'plain_text',
+          ),
+          'default_order_toggle' => 0,
+        ),
         'user_register_form' => FALSE,
       ),
       'display' => array(
@@ -258,6 +265,12 @@ function _incubator_fields_field_attribution($op = 'field') {
             'trim_length' => 600,
           ),
           'module' => 'incubator',
+        ),
+        'search_result' => array(
+          'type' => 'hidden',
+          'label' => 'above',
+          'settings' => array(),
+          'weight' => 0,
         ),
       ),
       'required' => 0,
