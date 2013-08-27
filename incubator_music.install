@@ -73,8 +73,8 @@ function incubator_animals_uninstall() {
 function _incubator_music_get_lyrics_format() {
   if (!$format = filter_format_load('lyrics')) {
     $format = array(
-      'format' => 'filtered_html',
-      'name' => 'Filtered HTML',
+      'format' => 'lyrics',
+      'name' => 'Lyrics',
       'weight' => 10,
       'filters' => array(
         // URL filter.
