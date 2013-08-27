@@ -32,6 +32,17 @@ function incubator_music_enable() {
       'settings' => array(),
       'weight' => 0,
     );
+    $body_field['settings']['better_formats'] = array(
+      'allowed_formats_toggle' => 0,
+      'default_order_toggle' => 1,
+      'default_order_wrapper' => array(
+        'formats' => array(
+          'lyrics' => array(
+            'weight' => '-100',
+          ),
+        ),
+      ),
+    );
     field_update_instance($body_field);
   }
 
